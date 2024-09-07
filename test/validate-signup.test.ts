@@ -2,6 +2,7 @@ import request from "supertest";
 import app from "../app";
 import { PGConnection } from "../src/database/pg-connection";
 import { faker } from "@faker-js/faker";
+import { ERROR_MESSAGES } from "../src/constants/signup/errors";
 
 let pgConnection: PGConnection;
 
@@ -23,7 +24,7 @@ test("Deve dar erro ao cadastrar uma conta por causa de nome inválido", async (
     .set("Accept", "application/json");
 
   expect(response.status).toBe(500);
-  expect(response.body).toStrictEqual({ error: "Nome inválido" });
+  expect(response.body).toStrictEqual({ error: ERROR_MESSAGES.INVALID_NAME });
 });
 
 test("Deve dar erro ao cadastrar uma conta por causa de email inválido", async () => {
@@ -33,7 +34,7 @@ test("Deve dar erro ao cadastrar uma conta por causa de email inválido", async 
     .set("Accept", "application/json");
 
   expect(response.status).toBe(500);
-  expect(response.body).toStrictEqual({ error: "Email inválido" });
+  expect(response.body).toStrictEqual({ error: ERROR_MESSAGES.INVALID_EMAIL });
 });
 
 test("Deve dar erro ao cadastrar uma conta por causa de cpf inválido", async () => {
@@ -43,7 +44,7 @@ test("Deve dar erro ao cadastrar uma conta por causa de cpf inválido", async ()
     .set("Accept", "application/json");
 
   expect(response.status).toBe(500);
-  expect(response.body).toStrictEqual({ error: "CPF inválido" });
+  expect(response.body).toStrictEqual({ error: ERROR_MESSAGES.INVALID_CPF });
 });
 
 test("Deve dar erro ao cadastrar uma conta por causa de placa nula", async () => {
@@ -60,7 +61,9 @@ test("Deve dar erro ao cadastrar uma conta por causa de placa nula", async () =>
     .set("Accept", "application/json");
 
   expect(response.status).toBe(500);
-  expect(response.body).toStrictEqual({ error: "Placa do carro inválida" });
+  expect(response.body).toStrictEqual({
+    error: ERROR_MESSAGES.INVALID_CAR_PLATE,
+  });
 });
 
 test("Deve dar erro ao cadastrar uma conta por causa de placa inválida", async () => {
@@ -77,7 +80,9 @@ test("Deve dar erro ao cadastrar uma conta por causa de placa inválida", async 
     .set("Accept", "application/json");
 
   expect(response.status).toBe(500);
-  expect(response.body).toStrictEqual({ error: "Placa do carro inválida" });
+  expect(response.body).toStrictEqual({
+    error: ERROR_MESSAGES.INVALID_CAR_PLATE,
+  });
 });
 
 test("Deve dar erro ao cadastrar uma conta por causa de senha inválida", async () => {
@@ -93,7 +98,9 @@ test("Deve dar erro ao cadastrar uma conta por causa de senha inválida", async 
     .set("Accept", "application/json");
 
   expect(response.status).toBe(500);
-  expect(response.body).toStrictEqual({ error: "Senha inválida" });
+  expect(response.body).toStrictEqual({
+    error: ERROR_MESSAGES.INVALID_PASSWORD,
+  });
 });
 
 test("Deve cadastrar uma conta", async () => {
@@ -130,7 +137,6 @@ test("Deve cadastrar uma conta", async () => {
     })
     .set("Accept", "application/json");
 
-  console.log(responseConsulta.body, "mn");
   expect(responseConsulta.status).toBe(200);
   expect(responseConsulta.body).toHaveProperty("id");
   expect(responseConsulta.body).toEqual(
@@ -168,7 +174,9 @@ test("Deve cadastrar uma conta e dar erro na consulta", async () => {
     .set("Accept", "application/json");
 
   expect(responseConsulta.status).toBe(500);
-  expect(responseConsulta.body).toStrictEqual({ error: "Email inválido" });
+  expect(responseConsulta.body).toStrictEqual({
+    error: ERROR_MESSAGES.INVALID_EMAIL,
+  });
 });
 
 test("Deve cadastrar uma conta e dar erro na consulta email nulo", async () => {
@@ -197,7 +205,9 @@ test("Deve cadastrar uma conta e dar erro na consulta email nulo", async () => {
     .set("Accept", "application/json");
 
   expect(responseConsulta.status).toBe(500);
-  expect(responseConsulta.body).toStrictEqual({ error: "Email inválido" });
+  expect(responseConsulta.body).toStrictEqual({
+    error: ERROR_MESSAGES.INVALID_EMAIL,
+  });
 });
 test("Deve dar erro de conta existente", async () => {
   const email = faker.internet.email();
@@ -231,6 +241,6 @@ test("Deve dar erro de conta existente", async () => {
 
   expect(responseContaExistente.status).toBe(500);
   expect(responseContaExistente.body).toStrictEqual({
-    error: "Conta existente",
+    error: ERROR_MESSAGES.ACCOUNT_EXISTS,
   });
 });

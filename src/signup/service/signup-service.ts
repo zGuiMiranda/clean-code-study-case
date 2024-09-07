@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { validateCpf } from "../../validateCpf";
 import { SignupRepository } from "../repository/signup-repository";
 import { PGConnection } from "../../database/pg-connection";
+import { ERROR_MESSAGES } from "../../constants/signup/errors";
 
 export class SignupService {
   private repository;
@@ -15,13 +16,14 @@ export class SignupService {
 
     const acc = await this.repository.getByEmail(email);
 
-    if (acc) throw new Error("Conta existente");
-    if (!account.validateName()) throw new Error("Nome inválido");
-    if (!account.validateEmail()) throw new Error("Email inválido");
-    if (!validateCpf(cpf)) throw new Error("CPF inválido");
-    if (!account.validatePassword()) throw new Error("Senha inválida");
+    if (acc) throw new Error(ERROR_MESSAGES.ACCOUNT_EXISTS);
+    if (!account.validateName()) throw new Error(ERROR_MESSAGES.INVALID_NAME);
+    if (!account.validateEmail()) throw new Error(ERROR_MESSAGES.INVALID_EMAIL);
+    if (!validateCpf(cpf)) throw new Error(ERROR_MESSAGES.INVALID_CPF);
+    if (!account.validatePassword())
+      throw new Error(ERROR_MESSAGES.INVALID_PASSWORD);
     if (isDriver && !account.validateCarPlate())
-      throw new Error("Placa do carro inválida");
+      throw new Error(ERROR_MESSAGES.INVALID_CAR_PLATE);
 
     const id = crypto.randomUUID();
 
@@ -31,7 +33,8 @@ export class SignupService {
   };
 
   getByEmail = async (email: string) => {
-    if (!Account.validateEmail(email)) throw new Error("Email inválido");
+    if (!Account.validateEmail(email))
+      throw new Error(ERROR_MESSAGES.INVALID_EMAIL);
     const acc = await this.repository.getByEmail(email);
     return acc;
   };
