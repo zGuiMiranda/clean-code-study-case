@@ -3,6 +3,7 @@ import app from "../app";
 import { PGConnection } from "../src/database/pg-connection";
 import { faker } from "@faker-js/faker";
 import { ERROR_MESSAGES } from "../src/constants/signup/errors";
+import { STATUSES_CODE } from "../src/constants/http/statuses";
 
 let pgConnection: PGConnection;
 
@@ -23,7 +24,7 @@ test("Deve dar erro ao cadastrar uma conta por causa de nome inválido", async (
     .send()
     .set("Accept", "application/json");
 
-  expect(response.status).toBe(500);
+  expect(response.status).toBe(STATUSES_CODE.ERROR);
   expect(response.body).toStrictEqual({ error: ERROR_MESSAGES.INVALID_NAME });
 });
 
@@ -33,7 +34,7 @@ test("Deve dar erro ao cadastrar uma conta por causa de email inválido", async 
     .send({ name: "Gwyn Owl" })
     .set("Accept", "application/json");
 
-  expect(response.status).toBe(500);
+  expect(response.status).toBe(STATUSES_CODE.ERROR);
   expect(response.body).toStrictEqual({ error: ERROR_MESSAGES.INVALID_EMAIL });
 });
 
@@ -43,7 +44,7 @@ test("Deve dar erro ao cadastrar uma conta por causa de cpf inválido", async ()
     .send({ name: "Gwyn Owl", email: faker.internet.email(), cpf: "1" })
     .set("Accept", "application/json");
 
-  expect(response.status).toBe(500);
+  expect(response.status).toBe(STATUSES_CODE.ERROR);
   expect(response.body).toStrictEqual({ error: ERROR_MESSAGES.INVALID_CPF });
 });
 
@@ -60,7 +61,7 @@ test("Deve dar erro ao cadastrar uma conta por causa de placa nula", async () =>
     })
     .set("Accept", "application/json");
 
-  expect(response.status).toBe(500);
+  expect(response.status).toBe(STATUSES_CODE.ERROR);
   expect(response.body).toStrictEqual({
     error: ERROR_MESSAGES.INVALID_CAR_PLATE,
   });
@@ -79,7 +80,7 @@ test("Deve dar erro ao cadastrar uma conta por causa de placa inválida", async 
     })
     .set("Accept", "application/json");
 
-  expect(response.status).toBe(500);
+  expect(response.status).toBe(STATUSES_CODE.ERROR);
   expect(response.body).toStrictEqual({
     error: ERROR_MESSAGES.INVALID_CAR_PLATE,
   });
@@ -97,13 +98,13 @@ test("Deve dar erro ao cadastrar uma conta por causa de senha inválida", async 
     })
     .set("Accept", "application/json");
 
-  expect(response.status).toBe(500);
+  expect(response.status).toBe(STATUSES_CODE.ERROR);
   expect(response.body).toStrictEqual({
     error: ERROR_MESSAGES.INVALID_PASSWORD,
   });
 });
 
-test("Deve cadastrar uma conta", async () => {
+test("Deve cadastrar uma conta e consultar ela", async () => {
   const email = faker.internet.email();
   const name = faker.person.fullName();
   const password = faker.internet.password();
@@ -121,7 +122,7 @@ test("Deve cadastrar uma conta", async () => {
     })
     .set("Accept", "application/json");
 
-  expect(response.status).toBe(200);
+  expect(response.status).toBe(STATUSES_CODE.SUCCESS_CREATION);
   expect(response.body).toHaveProperty("id");
 
   const responseConsulta = await request(app.server)
@@ -137,7 +138,7 @@ test("Deve cadastrar uma conta", async () => {
     })
     .set("Accept", "application/json");
 
-  expect(responseConsulta.status).toBe(200);
+  expect(responseConsulta.status).toBe(STATUSES_CODE.SUCCESS);
   expect(responseConsulta.body).toHaveProperty("id");
   expect(responseConsulta.body).toEqual(
     expect.objectContaining({
@@ -166,14 +167,14 @@ test("Deve cadastrar uma conta e dar erro na consulta", async () => {
     })
     .set("Accept", "application/json");
 
-  expect(response.status).toBe(200);
+  expect(response.status).toBe(STATUSES_CODE.SUCCESS_CREATION);
   expect(response.body).toHaveProperty("id");
 
   const responseConsulta = await request(app.server)
     .get(`/getAccount/${"testeemailinvalido"}`)
     .set("Accept", "application/json");
 
-  expect(responseConsulta.status).toBe(500);
+  expect(responseConsulta.status).toBe(STATUSES_CODE.ERROR);
   expect(responseConsulta.body).toStrictEqual({
     error: ERROR_MESSAGES.INVALID_EMAIL,
   });
@@ -197,14 +198,14 @@ test("Deve cadastrar uma conta e dar erro na consulta email nulo", async () => {
     })
     .set("Accept", "application/json");
 
-  expect(response.status).toBe(200);
+  expect(response.status).toBe(STATUSES_CODE.SUCCESS_CREATION);
   expect(response.body).toHaveProperty("id");
 
   const responseConsulta = await request(app.server)
     .get(`/getAccount/${null}`)
     .set("Accept", "application/json");
 
-  expect(responseConsulta.status).toBe(500);
+  expect(responseConsulta.status).toBe(STATUSES_CODE.ERROR);
   expect(responseConsulta.body).toStrictEqual({
     error: ERROR_MESSAGES.INVALID_EMAIL,
   });
@@ -224,7 +225,7 @@ test("Deve dar erro de conta existente", async () => {
     })
     .set("Accept", "application/json");
 
-  expect(response.status).toBe(200);
+  expect(response.status).toBe(STATUSES_CODE.SUCCESS_CREATION);
 
   const responseContaExistente = await request(app.server)
     .post("/signup")
@@ -239,7 +240,7 @@ test("Deve dar erro de conta existente", async () => {
     })
     .set("Accept", "application/json");
 
-  expect(responseContaExistente.status).toBe(500);
+  expect(responseContaExistente.status).toBe(STATUSES_CODE.ERROR);
   expect(responseContaExistente.body).toStrictEqual({
     error: ERROR_MESSAGES.ACCOUNT_EXISTS,
   });
