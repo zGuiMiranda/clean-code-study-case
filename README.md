@@ -1,1 +1,1 @@
-Exercício de refatoração e teste
+Exercício de refatoração e teste utilizando jest
