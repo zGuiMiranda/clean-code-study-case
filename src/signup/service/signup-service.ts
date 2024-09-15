@@ -25,11 +25,9 @@ export class SignupService {
     if (isDriver && !account.validateCarPlate())
       throw new Error(ERROR_MESSAGES.INVALID_CAR_PLATE);
 
-    const id = crypto.randomUUID();
-
     await this.repository.signup(account);
 
-    return { id };
+    return { id: account.id };
   };
 
   getByEmail = async (email: string) => {

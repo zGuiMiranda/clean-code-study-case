@@ -30,7 +30,7 @@ export class PGConnection implements IConnection {
     await this.connection.$pool.end();
   }
 
-  async deleteAll(): Promise<void> {
-    await this.connection.none("DELETE FROM ccca.account");
+  async deleteAll(queryString: string): Promise<void> {
+    await this.connection.none(queryString);
   }
 }

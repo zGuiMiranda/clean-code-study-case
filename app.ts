@@ -1,5 +1,6 @@
 import express from "express";
 import { router as signupRoutes } from "./src/signup/routes/routes";
+import { router as requestRideRoutes } from "./src/ride/routes/routes";
 
 class App {
   public server: express.Application;
@@ -11,6 +12,7 @@ class App {
 
   routes() {
     this.server.use("/", signupRoutes);
+    this.server.use("/", requestRideRoutes);
   }
 
   middleware() {

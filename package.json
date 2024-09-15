@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npx nodemon server.ts",
     "test": "npx jest --coverage",
-    "test:watch": "npx jest --watch test/validate-signup.test.ts",
+    "test-solo:watch": "npx jest --watch test/folder/test",
     "docker:start": "docker compose up -d",
     "docker:stop": "docker compose stop",
     "docker:clean": "docker compose rm -fsv"

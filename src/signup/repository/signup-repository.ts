@@ -1,5 +1,6 @@
 import { IConnection } from "../../database/interface-connection";
 import { Account } from "../domain/account.entity";
+import { SignupRepositoryInterface } from "./signup-repository-interface";
 
 type Model = {
   account_id: string;
@@ -12,7 +13,9 @@ type Model = {
   password: string;
 };
 
-export class SignupRepository {
+export class SignupRepository
+  implements SignupRepositoryInterface<Account | undefined, Model>
+{
   constructor(private connection: IConnection) {
     this.connection = connection;
   }

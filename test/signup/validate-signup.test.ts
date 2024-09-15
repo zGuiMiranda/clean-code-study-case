@@ -1,22 +1,8 @@
-import request from "supertest";
-import app from "../app";
-import { PGConnection } from "../src/database/pg-connection";
 import { faker } from "@faker-js/faker";
-import { ERROR_MESSAGES } from "../src/constants/signup/errors";
-import { STATUSES_CODE } from "../src/constants/http/statuses";
-
-let pgConnection: PGConnection;
-
-beforeAll(async () => {
-  pgConnection = PGConnection.getInstance();
-});
-
-afterAll(async () => {
-  if (pgConnection) {
-    await pgConnection.deleteAll();
-    await pgConnection.end();
-  }
-});
+import request from "supertest";
+import app from "../../app";
+import { STATUSES_CODE } from "../../src/constants/http/statuses";
+import { ERROR_MESSAGES } from "../../src/constants/signup/errors";
 
 test("Deve dar erro ao cadastrar uma conta por causa de nome inválido", async () => {
   const response = await request(app.server)
@@ -125,7 +111,7 @@ test("Deve cadastrar uma conta e consultar ela", async () => {
   expect(response.status).toBe(STATUSES_CODE.SUCCESS_CREATION);
   expect(response.body).toHaveProperty("id");
 
-  const responseConsulta = await request(app.server)
+  const responseQuery = await request(app.server)
     .get(`/getAccount/${email}`)
     .send({
       name: "Gwyn Owl",
@@ -138,9 +124,9 @@ test("Deve cadastrar uma conta e consultar ela", async () => {
     })
     .set("Accept", "application/json");
 
-  expect(responseConsulta.status).toBe(STATUSES_CODE.SUCCESS);
-  expect(responseConsulta.body).toHaveProperty("id");
-  expect(responseConsulta.body).toEqual(
+  expect(responseQuery.status).toBe(STATUSES_CODE.SUCCESS);
+  expect(responseQuery.body).toHaveProperty("id");
+  expect(responseQuery.body).toEqual(
     expect.objectContaining({
       email: email,
       name: name,
@@ -170,12 +156,12 @@ test("Deve cadastrar uma conta e dar erro na consulta", async () => {
   expect(response.status).toBe(STATUSES_CODE.SUCCESS_CREATION);
   expect(response.body).toHaveProperty("id");
 
-  const responseConsulta = await request(app.server)
+  const responseQuery = await request(app.server)
     .get(`/getAccount/${"testeemailinvalido"}`)
     .set("Accept", "application/json");
 
-  expect(responseConsulta.status).toBe(STATUSES_CODE.ERROR);
-  expect(responseConsulta.body).toStrictEqual({
+  expect(responseQuery.status).toBe(STATUSES_CODE.ERROR);
+  expect(responseQuery.body).toStrictEqual({
     error: ERROR_MESSAGES.INVALID_EMAIL,
   });
 });
@@ -201,12 +187,12 @@ test("Deve cadastrar uma conta e dar erro na consulta email nulo", async () => {
   expect(response.status).toBe(STATUSES_CODE.SUCCESS_CREATION);
   expect(response.body).toHaveProperty("id");
 
-  const responseConsulta = await request(app.server)
+  const responseQuery = await request(app.server)
     .get(`/getAccount/${null}`)
     .set("Accept", "application/json");
 
-  expect(responseConsulta.status).toBe(STATUSES_CODE.ERROR);
-  expect(responseConsulta.body).toStrictEqual({
+  expect(responseQuery.status).toBe(STATUSES_CODE.ERROR);
+  expect(responseQuery.body).toStrictEqual({
     error: ERROR_MESSAGES.INVALID_EMAIL,
   });
 });
